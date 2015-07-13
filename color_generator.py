@@ -9,9 +9,11 @@ def hex_shades(input_hex, num_shades):
     arguments:
         input_hex: must be a hexacode string value starting with a #
         num_shades: the number of shades you want to generate based on base_hex, must be an int in [LB, UB]
+    output:
+        output_shades: list of shades with length = num_shades
     """
     # character limits
-    bounds = {'lower': 1, 'upper': 20}
+    bounds = {'lower': 1, 'upper': 19}
 
     # validate that base hex is a valid hex string
     try:
@@ -34,7 +36,7 @@ def hex_shades(input_hex, num_shades):
             return 'error: num_shades must be a round integer'
 
     # construct URL to call 
-    url = "http://www.w3schools.com/tags/ref_colorpicker.asp?colorhex="+input_hex
+    url = "http://www.w3schools.com/tags/http_colorshades.asp?colorhex="+input_hex
 
     # call URL with BS4 and parse out color shades
     soup = BeautifulSoup(urllib2.urlopen(url).read())
@@ -43,21 +45,27 @@ def hex_shades(input_hex, num_shades):
     output_shades = [unicode(tag.string) for tag in soup.find_all('td', {'class':'colorshadetxt'})]
 
     # select subset of shades according to num_shades
+    index_out = shade_bounds(num_shades)
+    return output_shades[index_out[0]:index_out[1]:index_out[2]]
+    
+def shade_bounds(num_shades):
+    """ 'intelligently' figures out which shades in shade list to return based on num_shades
+
+        assumes that the number of shades is = 19, based on w3 color generator
+    """
+    # case 1: num_shades is even and greater than 10
     if num_shades > 10 and num_shades%2==0 :
-        # "num_shades is even and greater than 10"
         start_index = (20-num_shades)/2
-        output_shades = output_shades[start_index:start_index+num_shades]
+        return [start_index,start_index+num_shades,1]
+    # case 2: num shades is odd and greater than 10
     elif num_shades > 10 :
-        # "num shades is odd and greater than 10"
-        start_index = int(0.5+(20-num_shades)/2)
-        output_shades = output_shades[start_index:start_index+num_shades]
+        start_index = int(0.5+(20-num_shades)/2)+1
+        return [start_index,start_index+num_shades,1]
+    # case 3: num shades is even and less than or equal to 10
     elif num_shades%2==0 :
-        # "num shades is even and less than or equal to 10"
         start_index = 10 - num_shades+1
-        output_shades = output_shades[start_index:start_index + (2*num_shades)-1:2]
+        return [start_index,start_index + (2*num_shades)-1,2]
+    # case 4: num shades is odd and less than or equal to 10
     else :
-       # print "num shades is odd and less than or equal to 10"
         start_index = 10 - num_shades+1
-        output_shades = output_shades[start_index:start_index + 2*num_shades:2]
-    # return output shades
-    return output_shades
+        return [start_index,start_index + 2*num_shades,2]
