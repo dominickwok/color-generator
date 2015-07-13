@@ -2,9 +2,9 @@ from color_generator import hex_shades
 from color_generator import shade_bounds
 
 # tests
-print hex_shades("#eeeeee", 5)
-print hex_shades("#eee", 19)
-print hex_shades("e94297", 5)
+assert isinstance(hex_shades("#eeeeee", 5), list), "hex = #eeeeee and num_shades = 5 did not produce a list"
+assert isinstance(hex_shades("#eee", 19), list), "hex = #eee and num_shades = 19 did not produce a list"
+assert isinstance(hex_shades("e94297", 5), list), "hex = #e94297 and num_shades = 5 did not produce a list"
 assert hex_shades("e94297", 'abc')[0:5] == "error", "non-numeric value for num_shades accepted"
 assert hex_shades("e94297", 5.3)[0:5] == "error", "float num_shades value accepted"
 assert hex_shades("e94297", -5)[0:5] == "error", "negative num_shades value accepted"

@@ -46,6 +46,8 @@ def hex_shades(input_hex, num_shades):
 
     # select subset of shades according to num_shades
     index_out = shade_bounds(num_shades)
+
+    # return subsetted shade list to user
     return output_shades[index_out[0]:index_out[1]:index_out[2]]
     
 def shade_bounds(num_shades):
