@@ -13,8 +13,6 @@ def hex_shades(input_hex, num_shades):
     # character limits
     bounds = {'lower': 1, 'upper': 20}
 
-    
-       
     # validate that base hex is a valid hex string
     try:
         check = str(input_hex)
@@ -46,33 +44,20 @@ def hex_shades(input_hex, num_shades):
 
     # select subset of shades according to num_shades
     if num_shades > 10 and num_shades%2==0 :
-        print "num_shades is even and greater than 10"
+        # "num_shades is even and greater than 10"
         start_index = (20-num_shades)/2
-        end_index = start_index+num_shades
-        output_shades = output_shades[start_index:end_index]
+        output_shades = output_shades[start_index:start_index+num_shades]
     elif num_shades > 10 :
-        print "num shades is odd and greater than 10"
+        # "num shades is odd and greater than 10"
         start_index = int(0.5+(20-num_shades)/2)
-        end_index = start_index+num_shades
-        output_shades = output_shades[start_index:end_index]
+        output_shades = output_shades[start_index:start_index+num_shades]
     elif num_shades%2==0 :
-        print "num shades is even and less than or equal to 10"
+        # "num shades is even and less than or equal to 10"
+        start_index = 10 - num_shades+1
+        output_shades = output_shades[start_index:start_index + (2*num_shades)-1:2]
     else :
-        print "num shades is odd and less than or equal to 10"
+       # print "num shades is odd and less than or equal to 10"
+        start_index = 10 - num_shades+1
+        output_shades = output_shades[start_index:start_index + 2*num_shades:2]
     # return output shades
     return output_shades
-
-# tests
-print hex_shades("#e94297", 5)
-print hex_shades("e94297", 5)
-print hex_shades("e94297", 'abc')
-print hex_shades("e94297", 5.3)
-print hex_shades("e94297", -5)
-print hex_shades("zzzzzz", 5)
-print hex_shades("#", -5)
-print hex_shades(123456, 4)
-
-print len(hex_shades("e94297", 11))
-print len(hex_shades("e94297", 12))
-print len(hex_shades("e94297", 5))
-print len(hex_shades("e94297", 6))
