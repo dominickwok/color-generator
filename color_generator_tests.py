@@ -1,5 +1,7 @@
 from color_generator import validate_input_hex
 from color_generator import validate_num_shades
+from color_generator import hex_to_rgb
+from color_generator import rgb_to_hex
 
 # hex_shades test
 """assert isinstance(hex_shades("#eeeeee", 5), list), "hex = #eeeeee and num_shades = 5 did not produce a list"
@@ -38,6 +40,23 @@ assert validate_num_shades(-203492348)==False
 assert validate_num_shades(230491340)==True
 assert validate_num_shades("asdsfas")==False
 assert validate_num_shades('abc')==False
+
+# hex_to_rgb tests
+assert hex_to_rgb("#237dc1") == (35, 125, 193)
+assert hex_to_rgb("#3ab496") == (58, 180, 150)
+assert hex_to_rgb("#836eb1") == (131, 110, 177)
+assert hex_to_rgb("#000") == (0, 0, 0)
+assert hex_to_rgb("#ffffff") == (255, 255, 255)
+
+# rgb_to_hex tests
+assert rgb_to_hex((35, 125, 193)) == "#237dc1"
+assert rgb_to_hex((58, 180, 150)) == "#3ab496"
+assert rgb_to_hex((131, 110, 177)) == "#836eb1"
+assert rgb_to_hex((0, 0, 0)) == "#000000"
+assert rgb_to_hex((255, 255, 255)) == "#ffffff"
+
+
+print "all tests passed!!"
 
 """
 # shade_bounds tests

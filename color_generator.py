@@ -15,11 +15,9 @@ def hex_shades(input_hex, num_shades):
         output_shades: list of shades with length = num_shades
     """
    
+    # validate user input
     assert validate_input_hex(input_hex), "error: invalid hex code. please input valid hex code of form #xxxxxx"
     assert validate_num_shades(num_shades), "error: invalid number of shades. please input a positive inger" 
-    # validate that num_shades is a valid int > 0
-
-
    # return method_1(input_hex, num_shades);
 
 
@@ -45,4 +43,11 @@ def validate_num_shades(num_shades):
             return False
     return True
 
+""" next two functions are from http://stackoverflow.com/questions/214359/converting-hex-color-to-rgb-and-vice-versa"""
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
+def rgb_to_hex(rgb):
+    return '#%02x%02x%02x' % rgb
