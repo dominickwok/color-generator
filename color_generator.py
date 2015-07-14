@@ -1,75 +1,83 @@
 import urllib2
 from bs4 import BeautifulSoup
 
-def hex_shades(input_hex, num_shades):
-    """ generates a color shade list based on a base color (input_hex) and number of shades (num_shades)
-
-        this code accomplishes this by taking a subset of values from http://www.w3schools.com/tags/ref_colorpicker.asp?colorhex=#FFFFFF
-
-    arguments:
-        input_hex: must be a hexacode string value starting with a #
-        num_shades: the number of shades you want to generate based on base_hex, must be an int in [LB, UB]
-    functions:
-        shade_bounds: used to calculate the bounds 
-    output:
-        output_shades: list of shades with length = num_shades
+def run_color_generator(input_hex, num_shades):
+    """ generates a color shade list based on a base color (input_hex) and
+    number of shades (num_shades)
     """
-    # character limits
-    bounds = {'lower': 1, 'upper': 19}
+    # validate user input
+    if not validate_input_hex(input_hex):
+        return "error: invalid hex code. please input valid hex code of form #xxxxxx"
+    if not validate_num_shades(num_shades):
+        return "error: invalid number of shades. please input a positive inger"
+    if num_shades==1:
+        return [input_hex]
+    # generate the shades
+    return output_shades(input_hex, num_shades)
 
-    # validate that base hex is a valid hex string
+
+def validate_input_hex(input_hex):
+    """ return true if user input hex is valid hex code, false otherwise
+    """
     try:
         check = str(input_hex)
         if input_hex[0] == '#':
             input_hex = input_hex[1:] # if there is a # in front of hex code, strip it
         check = int(input_hex, 16)
+        return True
     except:
-        return 'error: invalid input_hex'
+        return False
 
-    # validate that num_shades is a valid int > 0
+
+def validate_num_shades(num_shades):
+    """ return true if user input shade is a positive whole integer, false otherwise
+    """
     try:
         check = int(num_shades)
     except ValueError:
-        return 'error: invalid num_shades'
+        return False
     else:
-        if num_shades < bounds['lower'] or num_shades > bounds['upper']:
-            return 'error: num_shades must be between '+str(bounds['lower'])+' and '+str(bounds['upper'])
-        elif num_shades%1 > 0:
-            return 'error: num_shades must be a round integer'
+        if num_shades < 1 or num_shades%1 > 0:
+            return False
+    return True
 
-    # construct URL to call 
-    url = "http://www.w3schools.com/tags/http_colorshades.asp?colorhex="+input_hex
 
-    # call URL with BS4 and parse out color shades
-    soup = BeautifulSoup(urllib2.urlopen(url).read())
-
-    # read in full shade list    
-    output_shades = [unicode(tag.string) for tag in soup.find_all('td', {'class':'colorshadetxt'})]
-
-    # select subset of shades according to num_shades
-    index_out = shade_bounds(num_shades)
-
-    # return subsetted shade list to user
-    return output_shades[index_out[0]:index_out[1]:index_out[2]]
-    
-def shade_bounds(num_shades):
-    """ 'intelligently' figures out which shades in shade list to return based on num_shades
-
-        assumes that the number of shades is = 19, based on w3 color generator
+def hex_to_rgb(value):
+    """ from http://stackoverflow.com/questions/214359/converting-hex-color-to-rgb-and-vice-versa
+        converts hex code to rgb value
     """
-    # case 1: num_shades is even and greater than 10
-    if num_shades > 10 and num_shades%2==0 :
-        start_index = (20-num_shades)/2
-        return [start_index,start_index+num_shades,1]
-    # case 2: num shades is odd and greater than 10
-    elif num_shades > 10 :
-        start_index = int(0.5+(20-num_shades)/2)+1
-        return [start_index,start_index+num_shades,1]
-    # case 3: num shades is even and less than or equal to 10
-    elif num_shades%2==0 :
-        start_index = 10 - num_shades+1
-        return [start_index,start_index + (2*num_shades)-1,2]
-    # case 4: num shades is odd and less than or equal to 10
-    else :
-        start_index = 10 - num_shades+1
-        return [start_index,start_index + 2*num_shades,2]
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+
+def rgb_to_hex(rgb):
+    """ from http://stackoverflow.com/questions/214359/converting-hex-color-to-rgb-and-vice-versa
+        converts rgb value to hex code
+    """
+    return '#%02x%02x%02x' % rgb
+
+
+def output_shades(base_hex, num_shades):
+    """ this function takes the base hex code and creates number of shades
+        according to that hex code 
+    """
+    # convert base_hex to RGB
+    base_rgb = hex_to_rgb(base_hex)
+    # figure out which of R, G, or B is largest
+    val_max = float(max(base_rgb))
+    pos_max = base_rgb.index(val_max)
+    # create tuple with scalars
+    scale_rgb = tuple(val/val_max for val in base_rgb)
+    """ 
+    {{READABLE VERSION}} create list of values for pos_max
+    for i in range(0, num_shades):
+        val_max = (50 + i*200/(num_shades-1)) # increment the val_max from 50 to 250
+        print rgb_to_hex(tuple(int(scale*val_max) for scale in scale_rgb))
+    """
+    # {{UNREADABLE VERSION}} create list of values for pos_max
+    return [rgb_to_hex( \
+                tuple( \
+                    int(scale*(50+i*200/(num_shades-1)))\
+                for scale in scale_rgb) \
+            ) for i in range(0, num_shades)]
