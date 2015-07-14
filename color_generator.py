@@ -1,24 +1,15 @@
 import urllib2
 from bs4 import BeautifulSoup
 
-def hex_shades(input_hex, num_shades):
-    """ generates a color shade list based on a base color (input_hex) and number of shades (num_shades)
-
-        this code accomplishes this by taking a subset of values from http://www.w3schools.com/tags/ref_colorpicker.asp?colorhex=#FFFFFF
-
-    arguments:
-        input_hex: must be a hexacode string value starting with a #
-        num_shades: the number of shades you want to generate based on base_hex, must be an int in [LB, UB]
-    functions:
-        shade_bounds: used to calculate the bounds 
-    output:
-        output_shades: list of shades with length = num_shades
+def run_color_generator(input_hex, num_shades):
+    """ generates a color shade list based on a base color (input_hex) and
+    number of shades (num_shades)
     """
-   
     # validate user input
     assert validate_input_hex(input_hex), "error: invalid hex code. please input valid hex code of form #xxxxxx"
     assert validate_num_shades(num_shades), "error: invalid number of shades. please input a positive inger" 
-   # return method_1(input_hex, num_shades);
+    # generate the shades
+    return output_shades(input_hex, num_shades)
 
 
 def validate_input_hex(input_hex):
@@ -39,15 +30,34 @@ def validate_num_shades(num_shades):
     except ValueError:
         return False
     else:
-        if num_shades < 0 or num_shades%1 > 0:
+        if num_shades < 1 or num_shades%1 > 0:
             return False
     return True
 
-""" next two functions are from http://stackoverflow.com/questions/214359/converting-hex-color-to-rgb-and-vice-versa"""
+""" from http://stackoverflow.com/questions/214359/converting-hex-color-to-rgb-and-vice-versa"""
 def hex_to_rgb(value):
     value = value.lstrip('#')
     lv = len(value)
     return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
+""" from http://stackoverflow.com/questions/214359/converting-hex-color-to-rgb-and-vice-versa"""
 def rgb_to_hex(rgb):
     return '#%02x%02x%02x' % rgb
+
+def output_shades(base_hex, num_shades):
+    """ this function takes the base hex code and creates number of shades
+        according to that hex code 
+    """
+    # initialize scale values
+    start = 0.4
+    final = 1.6
+    # calculate scale range
+    scale_range = [start+i*(final-start)/(num_shades-1) for i in range(0, num_shades)]
+    # convert base_hex to RGB
+    base_rgb = hex_to_rgb(base_hex)
+    # using RGB of base_hex, calculate everything within 0.4 to 1.6 of RGB values
+    for scale in scale_range:
+        print rgb_to_hex(tuple(scale*rgb for rgb in base_rgb))
+
+    # return list
+    return True
