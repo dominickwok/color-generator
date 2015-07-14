@@ -62,6 +62,9 @@ def output_shades(base_hex, num_shades):
     """ this function takes the base hex code and creates number of shades
         according to that hex code 
     """
+    # initialize min and max allowable values for an element of RGB
+    min = 50
+    max = 200
     # convert base_hex to RGB
     base_rgb = hex_to_rgb(base_hex)
     # figure out which of R, G, or B is largest
@@ -71,13 +74,12 @@ def output_shades(base_hex, num_shades):
     scale_rgb = tuple(val/val_max for val in base_rgb)
     """ 
     {{READABLE VERSION}} create list of values for pos_max
-    for i in range(0, num_shades):
-        val_max = (50 + i*200/(num_shades-1)) # increment the val_max from 50 to 250
-        print rgb_to_hex(tuple(int(scale*val_max) for scale in scale_rgb))
+    hex_out_list = []                                               # initialize output list
+    for i in range(0, num_shades):                                  # generate a list of shades
+        val_max = (min + i*max/(num_shades-1))                      # increment the max RGB value from min to max
+        rgb_val = tuple(int(scale*val_max) for scale in scale_rgb)  # create rgb tuple using scale and val_max
+        hex_out_list.append(rgb_to_hex(rgb_val))                    # append the converted hex value to output list
+    return hex_out_list                                             # at the end of the day, give it all back    
     """
     # {{UNREADABLE VERSION}} create list of values for pos_max
-    return [rgb_to_hex( \
-                tuple( \
-                    int(scale*(50+i*200/(num_shades-1)))\
-                for scale in scale_rgb) \
-            ) for i in range(0, num_shades)]
+    return [rgb_to_hex(tuple(int(scale*(min+i*max/(num_shades-1))) for scale in scale_rgb)) for i in range(0, num_shades)]
