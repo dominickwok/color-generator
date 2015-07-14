@@ -9,6 +9,8 @@ def hex_shades(input_hex, num_shades):
     arguments:
         input_hex: must be a hexacode string value starting with a #
         num_shades: the number of shades you want to generate based on base_hex, must be an int in [LB, UB]
+    functions:
+        shade_bounds: used to calculate the bounds 
     output:
         output_shades: list of shades with length = num_shades
     """
